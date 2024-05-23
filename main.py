@@ -1,13 +1,37 @@
-import cv2
-from labelbox import Client, LabelingFrontend, OntologyBuilder, Tool
-
 # Initialize Labelbox
-with open("key.txt", "r") as file:
-    api_key = file.read().strip()
+import glob
+import os
+
+import cv2
+from labelbox import Client, Dataset, LabelingFrontend, OntologyBuilder, Tool
+
+api_key = os.getenv("API_KEY")
+
+if api_key is None:
+    raise Exception("Please set the API_KEY environment variable")
 
 client = Client(api_key)
+
+
+# Create a project
 project = client.create_project(name="Cricket Ball Detection")
-dataset = client.create_dataset(name="Cricket Ball Images", projects=project)
+
+# print information about the project
+print(project.uid)
+print(project.name)
+print(project.created_at)
+print(project.updated_at)
+
+dataset = client.create_dataset(name="Cricket Ball Images")
+# print information about the dataset
+print(dataset.name)
+print(dataset.created_at)
+print(dataset.updated_at)
+print(dataset.uid)
+
+
+# Associate the dataset with the project
+input("any key")
 
 # Define ontology
 ontology_builder = OntologyBuilder(
@@ -19,9 +43,6 @@ labeling_frontend = LabelingFrontend(
 project.setup(
     labeling_frontend=labeling_frontend, labeling_frontend_options={}
 )
-
-import glob
-import os
 
 # Get a list of all files in the input directory
 files = glob.glob("input/*")
